@@ -28,21 +28,30 @@ nav h2 {
     margin-top: 0;
 }
 
-nav ul {
+.category-list {
+    display: flex;
+    gap: 1rem;
     list-style-type: none;
     padding: 0;
 }
 
-nav ul li {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
+.category-list > li {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 4px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
-nav ul ul {
-    margin-left: 1rem;
+.category-list > li > ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 0.5rem;
+}
+
+.category-list > li > ul > li {
+    margin: 0.2rem 0;
 }
 
 section {
@@ -64,7 +73,7 @@ section {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
-    width: calc(33.333% - 2rem);
+    width: calc(15% - 2rem);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
 }

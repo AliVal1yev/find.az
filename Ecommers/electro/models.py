@@ -62,6 +62,27 @@ class Customer(models.Model):
     def __str__(self):
         return self.user.username
     
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
+
+    def get_total_price(self):
+        return self.quantity * self.product.price
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    items = models.ManyToManyField(CartItem, blank=True)
+
+    def __str__(self):
+        return f"Cart for {self.user.username}"
+
+    def get_cart_total(self):
+        return sum(item.get_total_price() for item in self.items.all())   
     
     
 class Order(models.Model):
@@ -70,9 +91,6 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return f'Order {self.id} by {self.customer}'
 
 
 class OrderItem(models.Model):
@@ -83,3 +101,6 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity} x {self.product.name}'
+    
+
+

@@ -1,48 +1,62 @@
-{% load static%}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - E-commerce Site</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-    <header>
-        <h1>Welcome to Find.az site</h1>
-    </header>
+{% block content%}
+{% if request.user.is_authenticated %}
+    <p>Welcome {{ request.user.username }}</p>
+    <a href="{% url 'logout' %}">Logout</a>
+{% else %}
 
-    <nav>
-        <h2>Categories</h2>
-        <ul>
-            {% for category in categories %}
-                <li>
-                    {{ category.name }}
-                    <ul>
-                        {% for subcategory in category.subcategories.all %}
-                            <li>{{ subcategory.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    </nav>
+<a href="{% url 'login' %}">
+    <button>
+        <h4> Login</h4>
+    </button>
+</a>
+<a href="{% url 'signup' %}">
+    <button>
+        <h4> Signup</h4>
+    </button>
+</a>  
+{% endif %}
 
-    <section id="products">
-        <h2>Products</h2>
-        <div class="product-grid">
-            {% for product in products %}
-                <div class="product-card" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
-                    <div class="product-info">
-                        <h3>{{ product.brand.name }} {{ product.model.name }}</h3>
-                        <p>Price: ${{ product.price }}</p>
-                        <p>Stock: {{ product.stock }}</p>
-                    </div>
+<a href="{% url 'cart' %}">
+    <button>
+        <h4> Cart</h4>
+    </button>
+</a> 
+<nav>
+    <h2>Categories</h2>
+    <ul class="category-list">
+        {% for category in categories %}
+            <li>
+                <h3>{{ category.name }}</h3>
+                <ul class="subcategory-list">
+                    {% for subcategory in category.subcategories.all %}
+                        <li>{{ subcategory.name }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
+
+<section id="products">
+    <h2>Products</h2>
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
+                <div class="product-info">
+                    <h3>{{ product.name }} {{ product.model.name }}</h3>
+                    <p>Price: ${{ product.price }}</p>
+                    <p>Stock: {{ product.stock }}</p>
+                    <a href="{% url 'details' product.id %}"><button>View Details</button></a>
+                    <form method="post" action="{% url 'add_to_cart' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Add to Cart</button>
+                    </form>
                 </div>
-            {% endfor %}
-        </div>
-    </section>
-</body>
-</html>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{%endblock%}

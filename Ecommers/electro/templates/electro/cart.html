@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Shopping Cart</h2>
+
+    {% if cart.items.all %}
+        <ul>
+            {% for item in cart.items.all %}
+                <li>{{ item.product.name }} {{ item.product.model}} - Quantity: {{ item.quantity }}</li>
+            {% endfor %}
+        </ul>
+
+        <p>Total: ${{ cart.get_cart_total }}</p>
+
+        <form method="post" action="">
+            {% csrf_token %}
+            <button type="submit">Proceed to Checkout</button>
+        </form>
+
+        <form method="post" action="{% url 'reset_cart' %}" style="margin-top: 10px;">
+            {% csrf_token %}
+            <button type="submit">Reset Cart</button>
+        </form>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+<a href= "{% url 'home' %}"> <button> Back </button></a>
+{% endblock %}
