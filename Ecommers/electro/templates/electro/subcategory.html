@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'home' %}"><button>Home</button></a>
+<h2>Products in {{ subcategory.name }}</h2>
+
+<div class="product-grid" style="display: flex; flex-wrap: wrap;">
+    {% for product in products %}
+        <div class="product-card" style="margin: 10px; border: 1px solid #ccc; padding: 10px; display: flex; flex-direction: column; align-items: center;">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
+            <div class="product-info" style="text-align: center;">
+                <h3>{{ product.name }} {{ product.model.name }}</h3>
+                <p>Price: ${{ product.price }}</p>
+                <p>Stock: {{ product.stock }}</p>
+                <a href="{% url 'details' product.id %}"><button>View Details</button></a>
+                <form method="post" action="{% url 'add_to_cart' product.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

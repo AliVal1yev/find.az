@@ -14,7 +14,7 @@
 
         <form method="post" action="">
             {% csrf_token %}
-            <button type="submit">Proceed to Checkout</button>
+            <button type="submit">Payment</button>
         </form>
 
         <form method="post" action="{% url 'reset_cart' %}" style="margin-top: 10px;">

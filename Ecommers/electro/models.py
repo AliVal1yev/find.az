@@ -49,7 +49,9 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='media/%Y/%m/%d', blank=True)
     description = models.TextField()
-
+    favorites = models.ManyToManyField(User, related_name='favorites_ads',blank=True)
+    
+    
     def __str__(self) -> str:
         return f'{self.pk}. {self.name} {self.model}'
 

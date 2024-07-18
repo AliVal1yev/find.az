@@ -45,6 +45,16 @@ urlpatterns = [
         views.reset_cart,
         name='reset_cart'
         ),
+    path(
+        'subcategory_products/<int:subcategory_id>/',
+        views.subcategory_products, 
+        name='subcategory_products'
+    ),
+     path(
+        'toggle-favorite/<int:id>/',
+        views.toggle_favorite,
+        name='toggle_favorite'
+        ),
 ]
 
 
