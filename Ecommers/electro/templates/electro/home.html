@@ -1,0 +1,48 @@
+{% load static%}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - E-commerce Site</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Find.az site</h1>
+    </header>
+
+    <nav>
+        <h2>Categories</h2>
+        <ul>
+            {% for category in categories %}
+                <li>
+                    {{ category.name }}
+                    <ul>
+                        {% for subcategory in category.subcategories.all %}
+                            <li>{{ subcategory.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+    <section id="products">
+        <h2>Products</h2>
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
+                    <div class="product-info">
+                        <h3>{{ product.brand.name }} {{ product.model.name }}</h3>
+                        <p>Price: ${{ product.price }}</p>
+                        <p>Stock: {{ product.stock }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</body>
+</html>
