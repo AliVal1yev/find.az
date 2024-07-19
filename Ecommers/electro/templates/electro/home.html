@@ -20,9 +20,13 @@
         {% endif %}
     </div>
     <div>
+        <a href="{% url 'wishlist' %}">
+            <img src="{% static 'image/wishlist_logo.png' %}" alt="wishlist" width="100" height="100">
+        </a>
         <a href="{% url 'cart' %}">
             <img src="{% static 'image/cart_icon1.png' %}" alt="Cart" width="80" height="80">
         </a>
+        
     </div>
 </div>
 

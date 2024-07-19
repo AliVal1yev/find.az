@@ -51,10 +51,15 @@ urlpatterns = [
         name='subcategory_products'
     ),
      path(
-        'toggle-favorite/<int:id>/',
+        'toggle-favorite/<int:product_id>/',
         views.toggle_favorite,
         name='toggle_favorite'
         ),
+    path(
+        'wishlist',
+        views.wishlist,
+        name='wishlist'
+    ),
 ]
 
 

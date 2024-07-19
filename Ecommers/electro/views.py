@@ -103,12 +103,23 @@ def subcategory_products(request, subcategory_id):
 
 
 @csrf_exempt
-def toggle_favorite(request, id):
-    product = get_object_or_404(Product, id=id)
+def toggle_favorite(request, product_id):
+    product = Product.objects.get(id=product_id)
     if request.user in product.favorites.all():
         product.favorites.remove(request.user)
         status = 'removed'
     else:
         product.favorites.add(request.user)
         status = 'added'
-    return JsonResponse({'status': status, 'product': product})
+    return JsonResponse({'status': status})
+
+
+@login_required
+def wishlist(request):
+    user = request.user
+    favorite_products = user.favorites_ads.all()
+
+    context ={
+        'favorite_products': favorite_products
+    }
+    return render(request, 'electro/wishlist.html', context)
