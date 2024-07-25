@@ -1,6 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if orders %}
+    <h1>Your Cart</h1>
+    <ul>
+        {% for order in orders %}
+            <h2>Order {{ order.id }}</h2>
+            <ul>
+                {% for item in order.items.all %}
+                    <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.price }}</li>
+                {% endfor %}
+            </ul>
+            <p>Total order: ${{ order.get_total_cost }}</p>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'checkout' %}"><button> Payment </button></a>
+    <a href="{% url 'reset_cart' %}">Clear Cart</a>
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+
+<a href= "{% url 'home' %}"> <button> Back </button></a>
+{% endblock %}
+
+{% comment %} {% extends 'base.html' %}
+
+{% block content %}
     <h2>Shopping Cart</h2>
 
     {% if cart.items.all %}
@@ -12,7 +37,7 @@
 
         <p>Total: ${{ cart.get_cart_total }}</p>
 
-        <form method="post" action="">
+        <form method="post" action="{% url 'checkout' %}">
             {% csrf_token %}
             <button type="submit">Payment</button>
         </form>
@@ -25,4 +50,4 @@
         <p>Your cart is empty.</p>
     {% endif %}
 <a href= "{% url 'home' %}"> <button> Back </button></a>
-{% endblock %}
+{% endblock %} {% endcomment %}

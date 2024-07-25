@@ -38,7 +38,11 @@
                 <a href="{% url 'details' product.id %}"><button>View Details</button></a>
                 <form method="post" action="{% url 'add_to_cart' product.id %}">
                     {% csrf_token %}
-                    <button type="submit">Add to Cart</button>
+                    {% if product.stock > 0 %}
+                            <button type="submit">Add to Cart</button>
+                    {% else %}
+                        <p>coming soon </p>
+                    {% endif %}
                 </form>
             </div>
             <div style="position: absolute; top: 10px; right: 10px;">

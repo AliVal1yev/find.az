@@ -60,6 +60,21 @@ urlpatterns = [
         views.wishlist,
         name='wishlist'
     ),
+    path(
+        'checkout',
+        views.checkout,
+        name='checkout'
+    ),
+    path(
+        'order_confirmation/<int:id>/',
+        views.order_confirmation,
+        name='order_confirmation'
+    ),
+    path(
+        'success', 
+        views.success,
+        name='success'
+    )
 ]
 
 
