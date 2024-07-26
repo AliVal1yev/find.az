@@ -4,7 +4,7 @@
 
 <img src="{{ product.image.url }}" alt="Image" width="300" height="300">
 <h3>{{ product.name }} {{ product.model.name }} </h3>
-<h3>Price: {{ product.price}} AZN</h3>
+<h3>Price: $ {{ product.price}}</h3>
 <h3>Stock: {{ product.stock }} </h3>
 <h3> {{ product.description}} </h3>
 <form method="post" action="{% url 'add_to_cart' product.id %}">
@@ -15,6 +15,6 @@
         <p>coming soon </p>
     {% endif %}
 </form>
-<a href= "{% url 'home' %}"> <button> Back </button></a>
+<a href= "{% url 'home' %}"> <button> Home </button></a>
 
 {%endblock%}

@@ -74,7 +74,12 @@ urlpatterns = [
         'success', 
         views.success,
         name='success'
-    )
+    ),
+      path(
+        'search/',
+        views.search_result,
+        name='search_result'
+        ),
 ]
 
 

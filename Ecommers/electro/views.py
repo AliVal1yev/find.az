@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Cart, CartItem, SubCategory, Order, OrderItem
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm, FakePaymentForm
+from .forms import SignupForm, LoginForm, FakePaymentForm, SearchForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
 import stripe
 from django.conf import settings
-from decimal import Decimal
+from django.db.models import Q
+from .serializers import ProductSerializer, CategorySerializer
+from rest_framework import viewsets
 
 def home (request):
     categories = Category.objects.all()
@@ -100,17 +102,12 @@ def view_cart(request):
 
 
 def reset_cart(request):
-    # Fetch all unpaid orders for the current user
     orders = Order.objects.filter(customer=request.user, paid=False)
-    
-    # If you want to set the orders as paid (thus clearing the cart):
+
     for order in orders:
         order.paid = True
         order.paid_at = timezone.now()
         order.save()
-    
-    # Alternatively, if you want to delete the unpaid orders entirely:
-    # orders.delete()
     
     return redirect('cart')
 
@@ -187,3 +184,33 @@ def order_confirmation(request, id):
 
 def success(request):
     return render(request, 'electro/success.html')
+
+
+def search_result(request):
+    query = request.GET.get('q')
+    if query:
+        products = Product.objects.filter(
+            Q(name__name__icontains=query) |
+            Q(model__name__icontains=query)  
+            
+        ).distinct()
+    else:
+        products = Product.objects.all()
+    context = {
+        'search_term': query,
+        'products': products,
+    }
+    
+    return render(request, 'electro/search_result.html', context)
+
+
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer

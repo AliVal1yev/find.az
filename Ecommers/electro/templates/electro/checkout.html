@@ -8,7 +8,7 @@
                 <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.price }}</li>
             {% endfor %}
         </ul>
-        <p>Total for this order: ${{ order.get_total_cost }}</p>
+        <p>Total order cost: ${{ order.get_total_cost }}</p>
     {% endfor %}
 </ul>
 
@@ -18,4 +18,4 @@
     <button type="submit">Complete Payment</button>
    
 </form>
-<a href= "{% url 'home' %}"> <button> Back </button></a>
+<a href= "{% url 'home' %}"> <button> Home </button></a>
