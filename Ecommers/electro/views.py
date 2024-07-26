@@ -14,8 +14,13 @@ from rest_framework import viewsets
 
 def home (request):
     categories = Category.objects.all()
-    products = Product.objects.order_by('-created_at')
+    prod = Product.objects.order_by('-created_at')
+    products = []
     
+    for product in prod:
+        if product.available:
+            products.append(product)
+            
     context = {
         'categories': categories,
         'products': products,
@@ -163,6 +168,8 @@ def checkout(request):
                 for item in order.items.all():
                     product = get_object_or_404(Product, id=item.product.id)
                     product.stock -= item.quantity
+                    if product.stock == 0:
+                        product.available = False
                     product.save()
             return redirect('success')
     else:
