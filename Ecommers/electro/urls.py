@@ -9,7 +9,11 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('details/<int:id>/', views.deails, name='details'),
+    path(
+        'details/<int:id>/',
+        views.deails,
+        name='details'
+            ),
     path(
         'login/', 
         views.user_login,
