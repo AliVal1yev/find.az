@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h2>Search Results for "{{ search_term }}"</h2>
+<div class="search-container">
+    <form method="GET" action="{% url 'search_result' %}">
+        <input type="text" name="q" placeholder="Search products" value="{{ request.GET.q }}">
+        <button type="submit">Search</button>   
+    </form>
+    <a href= "{% url 'home' %}"> <button> Home </button></a>
+</div>
+
+{% if products %}
+<section id="products">
+    <h2>Products</h2>
+    <div class="product-grid" style="display: flex; flex-wrap: wrap;">
+        {% for product in products %}
+            <div class="product-card" style="margin: 10px; position: relative;">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
+                <div class="product-info">
+                    <h3>{{ product.name }} {{ product.model.name }}</h3>
+                    <p>Price: ${{ product.price }}</p>
+                    <p>Stock: {{ product.stock }}</p>
+                    <a href="{% url 'details' product.id %}"><button>View Details</button></a>
+                    <form method="post" action="{% url 'add_to_cart' product.id %}">
+                        {% csrf_token %}
+                        {% if product.stock > 0 %}
+                            <button type="submit">Add to Cart</button>
+                        {% else %}
+                            <p>coming soon </p>
+                        {% endif %}
+                    </form>
+                </div>
+                <div style="position: absolute; top: 10px; right: 10px;">
+                    <img
+                        class="favorite-btn"
+                        data-ad-id="{{ product.id }}"
+                        src="{% if request.user in product.favorites.all %}{% static 'image/favorite_logo.png' %}{% else %}{% static 'image/non_favorite_logo.png' %}{% endif %}"
+                        alt="Favorite"
+                        style="width:30px;height:30px; cursor: pointer;"
+                    >
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.favorite-btn').click(function(e){
+                e.preventDefault();
+                var ad_id = $(this).data('ad-id');
+                var $btn = $(this);
+                $.ajax({
+                    url: '{% url "toggle_favorite" 0 %}'.replace('0', ad_id),
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response){
+                        if(response.status == 'added'){
+                            $btn.attr('src', '{% static "image/favorite_logo.png" %}');
+                        } else {
+                            $btn.attr('src', '{% static "image/non_favorite_logo.png" %}');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</section>
+
+{% else %}
+    <p>No products found.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,19 +1,26 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Cart, CartItem, SubCategory, Order, OrderItem
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm, FakePaymentForm
+from .forms import SignupForm, LoginForm, FakePaymentForm, SearchForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
-import stripe
 from django.conf import settings
-from decimal import Decimal
+from django.db.models import Q
+from .serializers import ProductSerializer, CategorySerializer
+from rest_framework import viewsets
+
 
 def home (request):
     categories = Category.objects.all()
-    products = Product.objects.order_by('-created_at')
+    prod = Product.objects.order_by('-created_at')
+    products = []
     
+    for product in prod:
+        if product.available:
+            products.append(product)
+            
     context = {
         'categories': categories,
         'products': products,
@@ -63,20 +70,19 @@ def user_logout(request):
     logout(request)
     return redirect('home')
 
+
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     order, created = Order.objects.get_or_create(customer=request.user, paid=False)
-    print(f"Order: {order}, Created: {created}")
-
     order_item, created = OrderItem.objects.get_or_create(order=order, product=product, defaults={'price': product.price})
-    print(f"OrderItem: {order_item}, Created: {created}")
     
     if not created:
-        order_item.quantity += 1
+        if order_item.quantity >= product.stock:
+            return redirect('home')
+        order_item.quantity += 1       
         order_item.price = product.price
     order_item.save()
-    print(f"OrderItem after save: {order_item}")
     
     return redirect('home')
 
@@ -85,11 +91,6 @@ def add_to_cart(request, product_id):
 def view_cart(request):
     orders = Order.objects.filter(customer=request.user, paid=False)
     total = sum(order.get_total_cost() for order in orders)
-
-    # Debugging output
-    print(f"Orders for user {request.user.username}: {[order.id for order in orders]}")
-    for order in orders:
-        print(f"Order ID: {order.id}, Items: {[item.product.name for item in order.items.all()]}")
     
     context = {
         'orders': orders,
@@ -100,18 +101,24 @@ def view_cart(request):
 
 
 def reset_cart(request):
-    # Fetch all unpaid orders for the current user
     orders = Order.objects.filter(customer=request.user, paid=False)
-    
-    # If you want to set the orders as paid (thus clearing the cart):
+
     for order in orders:
         order.paid = True
         order.paid_at = timezone.now()
         order.save()
     
-    # Alternatively, if you want to delete the unpaid orders entirely:
-    # orders.delete()
-    
+    return redirect('home')
+
+
+def remove_from_cart(request, item_id):
+    item = get_object_or_404(OrderItem, id=item_id, order__customer=request.user, order__paid=False)
+    order = item.order 
+
+    if order.items.count() == 1:
+        reset_cart(request)
+    else:
+        item.delete()
     return redirect('cart')
 
 
@@ -148,9 +155,6 @@ def wishlist(request):
     return render(request, 'electro/wishlist.html', context)
 
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
 @login_required
 def checkout(request):
     orders = Order.objects.filter(customer=request.user, paid=False)
@@ -166,6 +170,8 @@ def checkout(request):
                 for item in order.items.all():
                     product = get_object_or_404(Product, id=item.product.id)
                     product.stock -= item.quantity
+                    # if product.stock == 0:
+                    #     product.available = False
                     product.save()
             return redirect('success')
     else:
@@ -187,3 +193,33 @@ def order_confirmation(request, id):
 
 def success(request):
     return render(request, 'electro/success.html')
+
+
+def search_result(request):
+    query = request.GET.get('q')
+    if query:
+        products = Product.objects.filter(
+            Q(name__name__icontains=query) |
+            Q(model__name__icontains=query)  
+            
+        ).distinct()
+    else:
+        products = Product.objects.all()
+    context = {
+        'search_term': query,
+        'products': products,
+    }
+    
+    return render(request, 'electro/search_result.html', context)
+
+
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer

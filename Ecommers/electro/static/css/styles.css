@@ -71,7 +71,7 @@ section {
 .product-card {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 1rem;
     width: calc(15% - 2rem);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -88,7 +88,7 @@ section {
 }
 
 .product-info {
-    padding: 0.5rem;
+    padding: 0.2rem;
 }
 
 .product-info h3 {
@@ -97,4 +97,40 @@ section {
 
 .product-info p {
     margin: 0.2rem 0;
+}
+
+.search-container {
+    width: 1750px;
+    /* height: 50px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh;  */
+}
+
+.search-container form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-container input[type="text"] {
+    width: 300px; /* Adjust width as needed */
+    padding: 10px; /* Adjust padding for bigger input */
+    font-size: 16px; /* Increase font size */
+    border-radius: 5px; /* Optional: rounded corners */
+    border: 1px solid #ccc; /* Optional: border styling */
+}
+
+.search-container button {
+    padding: 10px 20px; /* Adjust padding for bigger button */
+    font-size: 16px; /* Increase font size */
+    border-radius: 5px; /* Optional: rounded corners */
+    border: none; /* Optional: remove border */
+    background-color: #007bff; /* Button background color */
+    color: white; /* Button text color */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+.search-container button:hover {
+    background-color: #0056b3; /* Button hover effect */
 }
