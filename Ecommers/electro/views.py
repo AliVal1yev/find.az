@@ -12,6 +12,7 @@ from django.db.models import Q
 from .serializers import ProductSerializer, CategorySerializer
 from rest_framework import viewsets
 
+
 def home (request):
     categories = Category.objects.all()
     prod = Product.objects.order_by('-created_at')
@@ -70,20 +71,19 @@ def user_logout(request):
     logout(request)
     return redirect('home')
 
+
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     order, created = Order.objects.get_or_create(customer=request.user, paid=False)
-    print(f"Order: {order}, Created: {created}")
-
     order_item, created = OrderItem.objects.get_or_create(order=order, product=product, defaults={'price': product.price})
-    print(f"OrderItem: {order_item}, Created: {created}")
     
     if not created:
-        order_item.quantity += 1
+        if order_item.quantity >= product.stock:
+            return redirect('home')
+        order_item.quantity += 1       
         order_item.price = product.price
     order_item.save()
-    print(f"OrderItem after save: {order_item}")
     
     return redirect('home')
 
@@ -92,11 +92,6 @@ def add_to_cart(request, product_id):
 def view_cart(request):
     orders = Order.objects.filter(customer=request.user, paid=False)
     total = sum(order.get_total_cost() for order in orders)
-
-    # Debugging output
-    print(f"Orders for user {request.user.username}: {[order.id for order in orders]}")
-    for order in orders:
-        print(f"Order ID: {order.id}, Items: {[item.product.name for item in order.items.all()]}")
     
     context = {
         'orders': orders,
@@ -114,6 +109,17 @@ def reset_cart(request):
         order.paid_at = timezone.now()
         order.save()
     
+    return redirect('home')
+
+
+def remove_from_cart(request, item_id):
+    item = get_object_or_404(OrderItem, id=item_id, order__customer=request.user, order__paid=False)
+    order = item.order 
+
+    if order.items.count() == 1:
+        reset_cart(request)
+    else:
+        item.delete()
     return redirect('cart')
 
 
@@ -168,8 +174,8 @@ def checkout(request):
                 for item in order.items.all():
                     product = get_object_or_404(Product, id=item.product.id)
                     product.stock -= item.quantity
-                    if product.stock == 0:
-                        product.available = False
+                    # if product.stock == 0:
+                    #     product.available = False
                     product.save()
             return redirect('success')
     else:

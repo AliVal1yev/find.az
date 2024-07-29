@@ -37,6 +37,8 @@ class Product(models.Model):
     name = models.ForeignKey(Brand, on_delete=models.CASCADE)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    on_sale = models.BooleanField(default=False)
     subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE)
     stock = models.PositiveIntegerField()
     available = models.BooleanField(default=True)
@@ -46,6 +48,10 @@ class Product(models.Model):
     description = models.TextField()
     favorites = models.ManyToManyField(User, related_name='favorites_ads',blank=True)
     
+    def get_price(self):
+        if self.on_sale and self.sale_price:
+            return self.sale_price
+        return self.price
     
     def __str__(self) -> str:
         return f'{self.pk}. {self.name} {self.model}'
@@ -103,7 +109,7 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def get_cost(self):
-        return self.product.price * self.quantity
+        return self.product.get_price() * self.quantity
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"

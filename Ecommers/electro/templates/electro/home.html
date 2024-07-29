@@ -5,7 +5,11 @@
     <div>
         {% if request.user.is_authenticated %}
             <p>Welcome {{ request.user.username }}</p>
-            <a href="{% url 'logout' %}">Logout</a>
+            <a href="{% url 'logout' %}">
+            <button>
+                <h4>Logout</h4>
+            </button>
+            </a>
         {% else %}
             <a href="{% url 'login' %}">
                 <button>
@@ -21,7 +25,7 @@
     </div>
     <div>
         <a href="{% url 'wishlist' %}">
-            <img src="{% static 'image/wishlist_logo.png' %}" alt="wishlist" width="100" height="100">
+            <img src="{% static 'image/wishlist_logo.png' %}" alt="wishlist" width="80" height="80">
         </a>
         <a href="{% url 'cart' %}">
             <img src="{% static 'image/cart_icon1.png' %}" alt="Cart" width="60" height="60">
@@ -64,7 +68,12 @@
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
                 <div class="product-info">
                     <h3>{{ product.name }} {{ product.model.name }}</h3>
-                    <p>Price: ${{ product.price }}</p>
+                    {% if product.on_sale %}
+                        <p>Original Price: <span style="text-decoration: line-through;">${{ product.price }}</span></p>
+                        <p>Sale Price: ${{ product.sale_price }}</p>
+                    {% else %}
+                        <p>Price: ${{ product.price }}</p>
+                    {% endif %}
                     <p>Stock: {{ product.stock }}</p>
                     <a href="{% url 'details' product.id %}"><button>View Details</button></a>
                     <form method="post" action="{% url 'add_to_cart' product.id %}">

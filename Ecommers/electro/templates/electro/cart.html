@@ -6,12 +6,31 @@
     <ul>
         {% for order in orders %}
             <h2>Order to {{ order.customer }}</h2>
-            <ul>
+            <section id="products">
+                <div class="product-grid" style="display: flex; flex-wrap: wrap;">
                 {% for item in order.items.all %}
-                    <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.price }}</li>
+                    <div class="product-card" style="margin: 10px; position: relative;">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="150" height="200">
+                        <div class="product-info">
+                            <h3>{{ item.product.name }} {{ item.product.model.name }}</h3>
+                            {% if item.product.on_sale %}
+                                <p>Original Price: <span style="text-decoration: line-through;">${{ item.product.price }}</span></p>
+                                <p>Sale Price: ${{ item.product.sale_price }}</p>
+                            {% else %}
+                                <p>Price: ${{ item.product.price }}</p>
+                            {% endif %}
+                            <p>Stock: {{ item.product.stock }}</p>
+                            <p>Quantity: {{ item.quantity }}</p>
+                            <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Remove from Cart</button>
+                            </form>
+                        </div>
+                    </div>        
                 {% endfor %}
-            </ul>
-            <p>Total order cost: ${{ order.get_total_cost }}</p>
+                </div>
+            </section>
+            <h2>Total order cost: ${{ order.get_total_cost }}</h2>
         {% endfor %}
     </ul>
     <a href="{% url 'checkout' %}"><button> Payment </button></a>
@@ -23,31 +42,3 @@
 <a href= "{% url 'home' %}"> <button> home </button></a>
 {% endblock %}
 
-{% comment %} {% extends 'base.html' %}
-
-{% block content %}
-    <h2>Shopping Cart</h2>
-
-    {% if cart.items.all %}
-        <ul>
-            {% for item in cart.items.all %}
-                <li>{{ item.product.name }} {{ item.product.model}} - Quantity: {{ item.quantity }}</li>
-            {% endfor %}
-        </ul>
-
-        <p>Total: ${{ cart.get_cart_total }}</p>
-
-        <form method="post" action="{% url 'checkout' %}">
-            {% csrf_token %}
-            <button type="submit">Payment</button>
-        </form>
-
-        <form method="post" action="{% url 'reset_cart' %}" style="margin-top: 10px;">
-            {% csrf_token %}
-            <button type="submit">Reset Cart</button>
-        </form>
-    {% else %}
-        <p>Your cart is empty.</p>
-    {% endif %}
-<a href= "{% url 'home' %}"> <button> Back </button></a>
-{% endblock %} {% endcomment %}

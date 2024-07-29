@@ -4,7 +4,12 @@
 
 <img src="{{ product.image.url }}" alt="Image" width="300" height="300">
 <h3>{{ product.name }} {{ product.model.name }} </h3>
-<h3>Price: $ {{ product.price}}</h3>
+{% if product.on_sale %}
+    <p>Original Price: <span style="text-decoration: line-through;">${{ product.price }}</span></p>
+    <p>Sale Price: ${{ product.sale_price }}</p>
+{% else %}
+    <p>Price: ${{ product.price }}</p>
+{% endif %}
 <h3>Stock: {{ product.stock }} </h3>
 <h3> {{ product.description}} </h3>
 <form method="post" action="{% url 'add_to_cart' product.id %}">

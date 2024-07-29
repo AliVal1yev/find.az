@@ -5,8 +5,9 @@
 <div class="search-container">
     <form method="GET" action="{% url 'search_result' %}">
         <input type="text" name="q" placeholder="Search products" value="{{ request.GET.q }}">
-        <button type="submit">Search</button>
+        <button type="submit">Search</button>   
     </form>
+    <a href= "{% url 'home' %}"> <button> Home </button></a>
 </div>
 
 {% if products %}
@@ -68,7 +69,7 @@
         });
     </script>
 </section>
-<a href= "{% url 'home' %}"> <button> Home </button></a>
+
 {% else %}
     <p>No products found.</p>
 {% endif %}

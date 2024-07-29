@@ -2,7 +2,6 @@
 
 {% block content %}
 
-<a href="{% url 'home' %}"><button>Home</button></a>
 <h2>Products in {{ subcategory.name }}</h2>
 
 <div class="product-grid" style="display: flex; flex-wrap: wrap;">
@@ -11,7 +10,12 @@
             <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150" height="200">
             <div class="product-info" style="text-align: center;">
                 <h3>{{ product.name }} {{ product.model.name }}</h3>
-                <p>Price: ${{ product.price }}</p>
+                {% if product.on_sale %}
+                    <p>Original Price: <span style="text-decoration: line-through;">${{ product.price }}</span></p>
+                    <p>Sale Price: ${{ product.sale_price }}</p>
+                {% else %}
+                    <p>Price: ${{ product.price }}</p>
+                {% endif %}
                 <p>Stock: {{ product.stock }}</p>
                 <a href="{% url 'details' product.id %}"><button>View Details</button></a>
                 <form method="post" action="{% url 'add_to_cart' product.id %}">
@@ -22,4 +26,5 @@
         </div>
     {% endfor %}
 </div>
+<a href="{% url 'home' %}"><button>Home</button></a>
 {% endblock %}
