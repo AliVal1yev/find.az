@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'findaz',
         'USER': 'myuser',
-        'PASSWORD': 'mypassword',
+        'PASSWORD': 'Ali123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
