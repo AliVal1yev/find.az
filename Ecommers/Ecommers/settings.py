@@ -87,7 +87,7 @@ DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql',
        'NAME': 'find.az',
-       'USER': 'postgres',
+       'USER': 'postgress',
        'PASSWORD':'Ali123',
        'HOST': 'localhost',
        'PORT': '5432',
