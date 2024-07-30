@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
-import stripe
 from django.conf import settings
 from django.db.models import Q
 from .serializers import ProductSerializer, CategorySerializer
@@ -154,9 +153,6 @@ def wishlist(request):
         'favorite_products': favorite_products
     }
     return render(request, 'electro/wishlist.html', context)
-
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 @login_required
