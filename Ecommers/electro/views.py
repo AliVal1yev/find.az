@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Product, Category, Cart, CartItem, SubCategory, Order, OrderItem
+from .models import Product, Category, SubCategory, Order, OrderItem, Customer
 from django.contrib.auth import authenticate, login, logout
-from .forms import SignupForm, LoginForm, FakePaymentForm, SearchForm
+from .forms import SignupForm, LoginForm, FakePaymentForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -10,7 +10,8 @@ from django.conf import settings
 from django.db.models import Q
 from .serializers import ProductSerializer, CategorySerializer
 from rest_framework import viewsets
-
+from django.core.mail import send_mail
+from .tasks import *
 
 def home (request):
     categories = Category.objects.all()
@@ -57,13 +58,15 @@ def user_login(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
+            send_login_mail_task.delay()
             if user:
-                login(request, user)    
+                login(request, user)   
+                
                 return redirect('home')
+             
     else:
         form = LoginForm()
     return render(request, 'electro/login.html', {'form': form})
-
 
 
 def user_logout(request):
@@ -173,6 +176,8 @@ def checkout(request):
                     # if product.stock == 0:
                     #     product.available = False
                     product.save()
+            send_order_conf_mail_task.delay()
+
             return redirect('success')
     else:
         form = FakePaymentForm()
@@ -211,8 +216,6 @@ def search_result(request):
     }
     
     return render(request, 'electro/search_result.html', context)
-
-
 
 
 class ProductViewSet(viewsets.ModelViewSet):

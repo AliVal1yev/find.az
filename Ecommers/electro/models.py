@@ -61,6 +61,7 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.IntegerField( blank=True)
     address = models.TextField(blank=True)
+    email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
         return self.user.username
