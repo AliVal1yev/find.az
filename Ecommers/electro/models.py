@@ -59,7 +59,7 @@ class Product(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.IntegerField( blank=True)
+    phone = models.IntegerField( blank=True, null=True)
     address = models.TextField(blank=True)
     email = models.EmailField(null=True, blank=True)
 

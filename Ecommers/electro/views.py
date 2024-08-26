@@ -39,11 +39,13 @@ def deails(request, id):
 
 
 def user_signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')
+            user = form.save()
+            Customer.objects.create(user=user, email=form.cleaned_data.get('email'))
+            login(request, user)
+            return redirect('home')
     else:
         form = SignupForm()
     return render(request, 'electro/signup.html', {'form': form})
