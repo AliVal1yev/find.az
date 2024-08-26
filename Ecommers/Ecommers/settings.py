@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2j-!zy-xgfd_6osh3==c8^-ry-qqp_78+*6d37d7)26h^bckdi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -139,8 +139,8 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_URL = 'electro/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'electro/static')]
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -166,7 +166,7 @@ EMAIL_HOST_USER = 'eliveliyev150@gmail.com'
 EMAIL_HOST_PASSWORD = 'kndabnlnsxtjemzg'
 
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'  # Example using Redis
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # Example using Redis
 CELERY_RESULT_BACKEND = 'django-db'  # Store task results
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

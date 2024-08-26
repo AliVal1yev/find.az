@@ -10,7 +10,6 @@ from django.conf import settings
 from django.db.models import Q
 from .serializers import ProductSerializer, CategorySerializer
 from rest_framework import viewsets
-from django.core.mail import send_mail
 from .tasks import *
 
 def home (request):
@@ -58,7 +57,6 @@ def user_login(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
-            send_login_mail_task.delay()
             if user:
                 login(request, user)   
                 
@@ -162,6 +160,8 @@ def wishlist(request):
 def checkout(request):
     orders = Order.objects.filter(customer=request.user, paid=False)
     total = sum(order.get_total_cost() for order in orders)
+    customer = get_object_or_404(Customer, user=request.user)
+    customer_email = customer.email
     
     if request.method == "POST":
         form = FakePaymentForm(request.POST)
@@ -175,8 +175,9 @@ def checkout(request):
                     product.stock -= item.quantity
                     # if product.stock == 0:
                     #     product.available = False
+                    send_order_conf_mail_task.delay(customer_email)
                     product.save()
-            send_order_conf_mail_task.delay()
+            
 
             return redirect('success')
     else:
