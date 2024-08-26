@@ -20,8 +20,8 @@ from rest_framework import routers, permissions
 from electro import views
 from django.conf.urls.static import static
 from django.conf import settings
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+from drf_yasg.views import get_schema_view # type: ignore
+from drf_yasg import openapi # type: ignore
 
 
 
